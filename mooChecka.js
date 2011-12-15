@@ -18,7 +18,7 @@
 
 var mooChecka = new Class({
 
-    version: 0.1,
+    version: 1.0,
 
     updated: "15/12/2011",
 
@@ -27,10 +27,11 @@ var mooChecka = new Class({
     // Default options
     // Don't change these here but on the instance (unless you want to)
     options: {
+        showWarning:  false,            // By default, do not show warnings
         selector:     "checka",         // Default selector
         triggerClass: "checka-trigger", // Class of the replacement div
         wrapperClass: "checka-wrapper", // Class of the wrapper div
-        textClass:    "checka-text",     // Class of the text div
+        textClass:    "checka-text",    // Class of the text div
         knobClass:    "checka-knob",    // Class of the knob
         onClass:      "checka-on",      // Class of the on state
         offClass:     "checka-off",     // Class of the off state
@@ -47,7 +48,11 @@ var mooChecka = new Class({
         var checkboxes = $$('input.'+this.options.selector+'[type=checkbox');
 
         if(!checkboxes.length)
-            return "Nothing to do, selector came up empty!";
+        {
+            if(this.options.showWarning && typeof(console) != "undefined")
+                console.info("mooChecka: Nothing to do, selector came up empty!");
+            return;
+        }
 
         checkboxes.each(this.replaceCheckbox.bind(this));
     },
@@ -68,7 +73,7 @@ var mooChecka = new Class({
         // Build the top visible element
         var te = new Element("div", {
             "class": this.options.triggerClass
-        }).inject(el, "after")
+        }).inject(el, "after");
         el.store("triggerElement", te);
 
         // Build the checkbox
@@ -84,12 +89,12 @@ var mooChecka = new Class({
             wrapper.addClass(this.options.offClass);
 
         // One and Zero
-        var one = new Element('div', {
+        new Element('div', {
             'class': this.options.oneClass,
             text: '1'
         }).inject(wrapper);
 
-        var zero = new Element('div', {
+        new Element('div', {
             'class': this.options.zeroClass,
             text: '0'
         }).inject(wrapper);
@@ -102,7 +107,7 @@ var mooChecka = new Class({
         // Original text
         if(el.get('title') != "")
         {
-            var txt = new Element('div', {
+            new Element('div', {
                 'class': this.options.textClass,
                 text: el.get('title')
             }).inject(te);
@@ -132,9 +137,5 @@ var mooChecka = new Class({
                 el.checked = true;
             }
         }.bind(this));
-
-        // Export the managed select to the hash
-        if(el.uid && el)
-            this.checkboxes[el.uid] = el;
     }
 }); // mooChecka
